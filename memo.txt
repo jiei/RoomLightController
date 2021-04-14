@@ -1,0 +1,6 @@
+Memo of recording and playing IR
+It worked with: 
+--post 70 [ms]
+--freq 30~35 [kHz]
+
+(ODELIC RC201W)
