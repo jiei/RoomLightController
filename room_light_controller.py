@@ -8,6 +8,7 @@ import subprocess
 import json
 import datetime
 import time
+import RPi.GPIO as GPIO
 #from time import sleep
  
 HOST = 'mqtt.beebotte.com'
@@ -31,13 +32,17 @@ def on_disconnect(client, userdata, flags, respons_code):
     
 def light_on():
     #date = datetime.datetime.now()
+    GPIO.output(4, 1)
     subprocess.call(["python3", "irrp.py", "-p", "-g17", "-f", "codes", "light_on", "--freq", "33"])
     print("Light on at ", date)
+    GPIO.output(4, 0)
        
 def light_off():
     #date = datetime.datetime.now()
+    GPIO.output(4, 1)
     subprocess.call(["python3", "irrp.py", "-p", "-g17", "-f", "codes", "light_off", "--freq", "33"])
     print("Light off at",date)
+    GPIO.output(4, 0)
 
 
 '''
@@ -67,6 +72,13 @@ if __name__ == '__main__':
     client.tls_set(CA_CERTS)
     client.connect(HOST, PORT)
     client.subscribe(TOPIC)
+    
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(4, GPIO.OUT)
+ 
+# GPIO21番ピンを3.3Vに設定
+    GPIO.output(4, 0)
+    
     while 1:
         date = datetime.datetime.now()
         if((is_daytime == False) and (date.hour == MORNING_TH_HOUR)):
@@ -78,6 +90,8 @@ if __name__ == '__main__':
             is_daytime = False
         
         client.loop()
+        GPIO.output(4, 0)
         time.sleep(1)
-
+    
+    GPIO.cleanup()
     #client.loop_forever()
